@@ -13,6 +13,20 @@ app.use(
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/", (_req, res) => {
+  res.json({
+    name: "MoodWrite AI API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      health: "/health",
+      generate: "POST /api/generate",
+      captions: "GET /api/captions",
+    },
+    docs: "https://github.com/ryramadhan/moodwrite-ai-backend",
+  });
+});
+
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
