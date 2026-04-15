@@ -16,15 +16,16 @@ async function generateCaptionWithGemini({ context }) {
   const configuredModel = process.env.GEMINI_MODEL;
   const candidateModels = [
     configuredModel,
-    "gemini-1.5-flash-latest",
-    "gemini-2.0-flash",
-    "gemini-1.5-pro-latest",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-8b",
+    "gemini-2.0-flash-exp",
   ].filter(Boolean);
 
   try {
     let lastErr = null;
 
     for (const modelName of candidateModels) {
+      console.log(`[Gemini] Trying model: ${modelName}`);
       try {
         const result = await genAI.models.generateContent({
           model: modelName,
@@ -46,6 +47,7 @@ async function generateCaptionWithGemini({ context }) {
       } catch (inner) {
         lastErr = inner;
         const msg = String(inner?.message || inner || "");
+        console.log(`[Gemini Error] Model ${modelName}: ${msg}`);
         // If it's a model-not-found / unsupported-method error, try next model.
         if (/404|not found|not supported/i.test(msg)) continue;
         throw inner;
