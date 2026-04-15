@@ -26,7 +26,9 @@ async function generateCaptionAny({ context }) {
     const result = await generateCaptionWithGemini({ context });
     return { result, provider: "gemini" };
   } catch (err) {
+    console.log("[AI Error]", err?.message, "Status:", err?.statusCode);
     if (fallbackMock && isQuotaOrBillingError(err)) {
+      console.log("[Fallback] Using mock response");
       const result = generateMockCaption({ context });
       return { result, provider: "mock" };
     }
