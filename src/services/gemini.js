@@ -16,9 +16,9 @@ async function generateCaptionWithGemini({ context }) {
   const configuredModel = process.env.GEMINI_MODEL;
   const candidateModels = [
     configuredModel,
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-8b",
-    "gemini-2.0-flash-exp",
+    "gemini-1.5-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-1.5-pro-latest",
   ].filter(Boolean);
 
   try {
