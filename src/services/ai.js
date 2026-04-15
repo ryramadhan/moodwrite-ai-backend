@@ -11,7 +11,7 @@ function isQuotaOrBillingError(err) {
   );
 }
 
-async function generateCaptionAny({ mood, text }) {
+async function generateCaptionAny({ context }) {
   const provider = (process.env.AI_PROVIDER || "gemini").toLowerCase();
   if (provider !== "gemini") {
     const err = new Error("Invalid AI_PROVIDER. Use: gemini");
@@ -23,11 +23,11 @@ async function generateCaptionAny({ mood, text }) {
     (process.env.AI_FALLBACK_MOCK || "true").toLowerCase() !== "false";
 
   try {
-    const result = await generateCaptionWithGemini({ mood, text });
+    const result = await generateCaptionWithGemini({ context });
     return { result, provider: "gemini" };
   } catch (err) {
     if (fallbackMock && isQuotaOrBillingError(err)) {
-      const result = generateMockCaption({ mood, text });
+      const result = generateMockCaption({ context });
       return { result, provider: "mock" };
     }
     throw err;

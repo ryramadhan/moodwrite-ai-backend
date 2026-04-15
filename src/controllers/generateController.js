@@ -1,14 +1,6 @@
 const { generateCaptionAny } = require("../services/ai");
 const { insertCaption } = require("../services/captionsService");
 
-const ALLOWED_MOODS = new Set([
-  "lonely",
-  "night",
-  "nostalgic",
-  "lost",
-  "calm",
-]);
-
 function badRequest(message) {
   const err = new Error(message);
   err.statusCode = 400;
@@ -16,49 +8,37 @@ function badRequest(message) {
 }
 
 // sanitize text input - remove potential harmful chars, limit length
-function sanitizeText(text) {
-  if (!text || typeof text !== "string") return "";
-  return text
-    .replace(/[<>"']/g, "")
+function sanitizeContext(context) {
+  if (!context || typeof context !== "string") return "";
+  return context
+    .replace(/[<>'"]/g, "")
     .trim()
-    .slice(0, 500);
+    .slice(0, 2000);
 }
 
 async function generate(req, res) {
-  const { mood, text } = req.body ?? {};
+  const { context } = req.body ?? {};
 
-  if (typeof mood !== "string" || !mood.trim()) {
-    throw badRequest("Field 'mood' is required");
-  }
-  const normalizedMood = mood.trim().toLowerCase();
-  if (!ALLOWED_MOODS.has(normalizedMood)) {
-    throw badRequest(
-      "Invalid mood. Allowed: lonely, night, nostalgic, lost, calm"
-    );
-  }
-
-  if (text != null && typeof text !== "string") {
-    throw badRequest("Field 'text' must be a string when provided");
+  if (typeof context !== "string" || !context.trim()) {
+    throw badRequest("Field 'context' is required");
   }
 
   const startedAt = Date.now();
-  const sanitizedText = sanitizeText(text);
+  const sanitizedContext = sanitizeContext(context);
   const { result, provider } = await generateCaptionAny({
-    mood: normalizedMood,
-    text: sanitizedText,
+    context: sanitizedContext,
   });
   const latency = Date.now() - startedAt;
 
   await insertCaption({
-    mood: normalizedMood,
-    inputText: sanitizedText || null,
+    context: sanitizedContext,
     result,
   });
 
   res.json({
     result,
     provider,
-    mood: normalizedMood,
+    context: sanitizedContext,
     latency,
   });
 }

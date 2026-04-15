@@ -11,7 +11,7 @@ function getGeminiClient() {
   return new GoogleGenerativeAI(apiKey);
 }
 
-async function generateCaptionWithGemini({ mood, text }) {
+async function generateCaptionWithGemini({ context }) {
   const genAI = getGeminiClient();
   const configuredModel = process.env.GEMINI_MODEL;
   const candidateModels = [
@@ -35,12 +35,12 @@ async function generateCaptionWithGemini({ mood, text }) {
           contents: [
             {
               role: "user",
-              parts: [{ text: buildUserPrompt({ mood, text }) }],
+              parts: [{ text: buildUserPrompt({ context }) }],
             },
           ],
           generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 90,
+            temperature: 0.7,
+            maxOutputTokens: 500,
           },
         });
 

@@ -1,11 +1,11 @@
 const { query } = require("./db");
 
-async function insertCaption({ mood, inputText, result }) {
+async function insertCaption({ context, result }) {
   const { rows } = await query(
-    `INSERT INTO captions (mood, input_text, result)
-     VALUES ($1, $2, $3)
-     RETURNING id, mood, input_text, result, created_at`,
-    [mood, inputText ?? null, result]
+    `INSERT INTO captions (context, result)
+     VALUES ($1, $2)
+     RETURNING id, context, result, created_at`,
+    [context, result]
   );
   return rows[0];
 }
@@ -15,7 +15,7 @@ async function listCaptions({ limit = 20, offset = 0 } = {}) {
   const safeOffset = Math.max(Number(offset) || 0, 0);
 
   const { rows } = await query(
-    `SELECT id, mood, input_text, result, created_at
+    `SELECT id, context, result, created_at
      FROM captions
      ORDER BY created_at DESC, id DESC
      LIMIT $1 OFFSET $2`,

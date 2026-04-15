@@ -24,13 +24,13 @@ app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (_req, res) => {
   res.json({
-    name: "MoodWrite AI API",
+    name: "AI Assistant API",
     version: "1.0.0",
     status: "running",
     endpoints: {
       health: "/health",
       generate: "POST /api/generate",
-      captions: "GET /api/captions",
+      history: "GET /api/captions",
     },
     docs: "https://github.com/ryramadhan/moodwrite-ai-backend",
   });
@@ -42,7 +42,6 @@ app.get("/health", (_req, res) => {
 
 const apiRoutes = require("./src/routes/generateRoutes");
 app.use("/api", apiRoutes);
-app.use(apiRoutes);
 
 // Centralized error handler
 // eslint-disable-next-line no-unused-vars

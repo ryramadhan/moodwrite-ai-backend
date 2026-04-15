@@ -1,10 +1,9 @@
 const SYSTEM_PROMPT =
-  "You are a minimalist writer. Generate short aesthetic captions with emotional depth, using simple words, not poetic overload, and suitable for modern monochrome visual design.";
+  "You are a helpful AI assistant. Provide clear, professional, and informative responses. Use standard language that is easy to understand. Be concise, accurate, and directly relevant to the user's input. Avoid overly emotional, artistic, or flowery language. Focus on delivering practical and useful information.";
 
-function buildUserPrompt({ mood, text }) {
-  const cleanedText = typeof text === "string" ? text.trim() : "";
-  if (cleanedText) return `Mood: ${mood}\nText: ${cleanedText}`;
-  return `Mood: ${mood}`;
+function buildUserPrompt({ context }) {
+  const cleanedContext = typeof context === "string" ? context.trim() : "";
+  return cleanedContext || "No input provided.";
 }
 
 module.exports = {
