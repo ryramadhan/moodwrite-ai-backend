@@ -1,4 +1,3 @@
-// Fallback responses when AI quota is exhausted
 // Indonesian-only, context-aware responses based on keywords
 
 // Expanded Indonesian keyword responses - 50+ topics
@@ -20,7 +19,7 @@ const ID_RESPONSES = {
   iri: "Rasa iri terkadang muncul tanpa disadari. Alihkan fokus dari orang lain ke diri sendiri. Ingat, setiap orang punya perjalanan dan waktunya masing-masing.",
   cinta: "Cinta adalah perasaan yang indah namun kompleks. Jaga komunikasi yang jujur, saling menghormati, dan memberi ruang untuk masing-masing tumbuh. Hubungan sehat butuh usaha dari kedua belah pihak.",
   putus: "Putus cinta memang menyakitkan. Beri diri Anda waktu untuk berduka dan pulih. Jangan buru-buru melupakan, tapi jangan juga terjebak di masa lalu. Fokus pada perawatan diri dan pertumbuhan pribadi.",
-  
+
   // Kesehatan & Wellness
   sehat: "Kesehatan adalah investasi terbaik jangka panjang. Perhatikan tiga pilar utama: pola makan bergizi, tidur cukup 7-8 jam, dan olahraga teratur minimal 30 menit sehari.",
   sakit: "Saat sakit, prioritaskan istirahat dan pemulihan. Jangan memaksakan diri bekerja atau beraktivitas. Konsumsi makanan bergizi dan cairan yang cukup. Jika gejala berlanjut, segera konsultasikan ke dokter.",
@@ -32,7 +31,7 @@ const ID_RESPONSES = {
   kurus: "Untuk menambah berat badan, fokus pada makanan padat nutrisi dan kalori sehat seperti kacang-kacangan, alpukat, dan protein. Kombinasikan dengan latihan kekuatan untuk membangun massa otot.",
   kulit: "Kesehatan kulit dimulai dari dalam: cukup tidur, minum air, makanan bergizi, dan proteksi sinar matahari. Rutinitas perawatan kulit yang sederhana namun konsisten lebih baik dari produk mahal.",
   mental: "Kesehatan mental sama pentingnya dengan kesehatan fisik. Jangan ragu mencari bantuan profesional jika dibutuhkan. Berbicara dengan psikolog bukan tanda kelemahan, melainkan keberanian.",
-  
+
   // Pekerjaan & Karir
   kerja: "Untuk produktivitas, coba teknik Pomodoro: kerja fokus 25 menit, lalu istirahat 5 menit. Prioritaskan tugas yang paling penting dan sulit di pagi hari ketika energi masih puncak.",
   karir: "Pengembangan karir membutuhkan perencanaan jangka panjang. Identifikasi keahlian yang perlu ditingkatkan, cari mentor, dan jangan takut mengambil tantangan baru untuk pertumbuhan.",
@@ -41,7 +40,7 @@ const ID_RESPONSES = {
   bisnis: "Membangun bisnis membutuhkan riset pasar, perencanaan finansial, dan kesabaran. Mulailah dari yang kecil, validasi ide Anda, dan siap untuk belajar dari kegagalan.",
   gaji: "Negosiasi gaji adalah hal yang wajar. Siapkan data gaji pasar untuk posisi Anda, highlight pencapaian dan kontribusi Anda, dan pilih waktu yang tepat untuk berdiskusi dengan atasan.",
   atasan: "Menjalin hubungan baik dengan atasan penting untuk karir. Komunikasikan progress secara rutin, minta feedback untuk berkembang, dan tunjukkan sikap proaktif dalam bekerja.",
-  
+
   // Pendidikan & Belajar
   belajar: "Belajar adalah investasi jangka panjang. Fokus pada pemahaman konsep, bukan hanya menghafal. Gunakan teknik aktif recall dan spaced repetition untuk retensi memori yang lebih baik.",
   ujian: "Persiapan ujian sebaiknya dilakukan jauh-jauh hari dengan belajar rutin. Hindari begadang sebelum ujian. Teknik flashcard dan latihan soal bisa membantu memperkuat pemahaman.",
@@ -49,18 +48,18 @@ const ID_RESPONSES = {
   kuliah: "Pengalaman kuliah adalah waktu untuk eksplorasi dan pengembangan diri. Selain akademik, ikuti organisasi atau kegiatan ekstrakurikuler untuk membangun soft skill dan relasi.",
   sekolah: "Masa sekolah adalah fondasi penting. Selain nilai, fokus juga pada pembentukan karakter, kebiasaan belajar, dan pengembangan minat. Jangan terlalu tertekan dengan perbandingan dengan teman.",
   bahasa: "Belajar bahasa baru membutuhkan konsistensi. Praktikkan setiap hari meski hanya 15 menit. Gunakan aplikasi, tonton film, atau cari partner bahasa untuk latihan percakapan.",
-  
+
   // Keuangan
   uang: "Kelola keuangan dengan prinsip 50/30/20: 50% untuk kebutuhan, 30% untuk keinginan, dan 20% untuk tabungan. Catat pengeluaran harian untuk melihat pola dan area yang bisa dioptimalkan.",
   tabungan: "Menabung sebaiknya dilakukan rutin meski jumlah kecil. Automatisasi transfer ke rekening tabungan setelah gajian. Miliki dana darurat minimal 3-6 bulan pengeluaran.",
   investasi: "Investasi adalah cara membuat uang bekerja untuk Anda. Mulailah dengan risiko rendah seperti reksadana atau obligasi. Pelajari dasar-dasar dan sesuaikan dengan profil risiko Anda.",
   utang: "Kelola utang dengan bijak. Prioritaskan bayar utang dengan bunga tinggi terlebih dahulu. Hindari menambah utang konsumtif. Jika terlilit banyak utang, konsultasikan dengan ahli keuangan.",
-  
+
   // Teknologi
   hp: "Penggunaan gadget yang bijak penting untuk kesehatan. Batasi screen time, gunakan mode gelap, perhatikan jarak pandang ke layar, dan ambil istirahat setiap 20 menit penggunaan.",
   laptop: "Rawat laptop dengan rutin bersihkan debu, update sistem operasi, dan hindari overcharging. Backup data penting secara rutin ke cloud atau external storage.",
   aplikasi: "Pilih aplikasi yang benar-benar membantu produktivitas, bukan malah mengganggu. Review dan hapus aplikasi yang jarang digunakan. Atur notifikasi untuk mengurangi gangguan.",
-  
+
   // Rumah Tangga & Relasi
   hubungan: "Hubungan yang sehat didasari komunikasi terbuka tanpa menuduh, saling menghargai perbedaan, dan memberi ruang untuk masing-masing berkembang. Jangan takut diskusi tentang ekspektasi.",
   pacar: "Dalam pacaran, komunikasi jujur dan trust adalah fondasi. Jangan kehilangan identitas diri dan tetap jalani hobi serta pertemanan di luar hubungan.",
@@ -71,7 +70,7 @@ const ID_RESPONSES = {
   saudara: "Hubungan dengan saudara adalah iklang seumur hidup. Meski ada perbedaan, usahakan menjaga komunikasi dan saling support dalam suka maupun duka.",
   tetangga: "Hubungan baik dengan tetangga menciptakan lingkungan yang nyaman. Hormati privasi masing-masing, tapi tetap sapa dan bantu jika dibutuhkan.",
   teman: "Pertemanan yang tulus saling mendukung tanpa bersyarat. Jaga kontak meski hanya sesekali, dan hadir saat teman membutuhkan. Kualitas lebih penting dari kuantitas.",
-  
+
   // Pengembangan Diri
   motivasi: "Setiap langkah kecil tetaplah kemajuan. Jangan bandingkan diri dengan orang lain karena setiap orang punya timeline berbeda. Fokus pada pertumbuhan dan versi terbaik diri Anda.",
   target: "Tetapkan target SMART: Specific, Measurable, Achievable, Relevant, Time-bound. Pecah target besar menjadi milestone kecil yang bisa diceklist. Rayakan setiap pencapaian.",
@@ -79,12 +78,12 @@ const ID_RESPONSES = {
   bahagia: "Kebahagiaan bukan tujuan akhir melainkan hasil dari kebiasaan positif dan mindset yang tepat. Bersyukur, relasi bermakna, dan hidup sesuai nilai adalah komponen pentingnya.",
   percaya: "Kepercayaan diri dibangun dari pengalaman. Mulailah dengan tantangan kecil, akui kemajuan Anda, dan jangan biarkan kegagalan masa lalu mendefinisikan kemampuan Anda.",
   introvert: "Introvert bukan kelemahan. Anda punya kekuatan dalam mendengarkan, berpikir mendalam, dan membangun relasi bermakna. Honor kebutuhan waktu sendiri untuk recharge.",
-  
+
   // Spiritual & Filosofis
   agama: "Spiritualitas adalah perjalanan pribadi. Dalami ajaran agama Anda dengan hati terbuka, praktikkan nilai-nilai kebaikan, dan hormati perbedaan keyakinan orang lain.",
   makna: "Makna hidup sering ditemukan dalam pelayanan kepada orang lain, pencapaian pribadi, relasi bermakna, atau kreativitas. Eksplorasi apa yang memberi rasa puas bagi Anda.",
   mati: "Pemikiran tentang kematian bisa membuat kita menghargai hidup lebih dalam. Fokus pada apa yang bisa Anda kontrol sekarang: bagaimana Anda hidup dan berdampak pada orang lain.",
-  
+
   // Lainnya
   cuaca: "Cuaca memang bisa mempengaruhi mood. Saat hujan, ciptakan suasana nyaman di rumah dengan minuman hangat dan aktivitas menyenangkan. Saat panas, tetap terhidrasi dan pakai sunscreen.",
   bencana: "Saat menghadapi bencana, prioritaskan keselamatan diri dan keluarga. Ikuti instruksi pihak berwenang, siapkan emergency kit, dan jaga komunikasi dengan keluarga.",
@@ -92,7 +91,7 @@ const ID_RESPONSES = {
   transport: "Transportasi umum mengurangi kemacetan dan polusi. Rencanakan perjalanan dengan cek rute dan jadwal terlebih dahulu. Selalu prioritaskan keselamatan di jalan.",
   liburan: "Liburan penting untuk recharge dan mendapat perspektif baru. Rencanakan dengan matang, tapi sisakan ruang untuk spontanitas. Dokumentasikan momen indahnya.",
   kado: "Memberi kado adalah ekspresi perhatian. Pilih sesuatu yang personal dan sesuai minat penerima. Bukan tentang harga, melainkan pemikiran di baliknya.",
-  
+
   // Topik Umum Tambahan
   waktu: "Manajemen waktu adalah keterampilan penting. Gunakan teknik time-blocking, prioritaskan tugas berdasarkan urgensi dan kepentingan, dan hindari multitasking yang justru menurunkan efisiensi.",
   skill: "Pengembangan skill membutuhkan 10.000 jam latihan yang terstruktur. Fokus pada deliberate practice: berlatih di zona nyaman Anda, dapatkan feedback, dan perbaiki kelemahan secara spesifik.",
@@ -114,7 +113,41 @@ const ID_RESPONSES = {
   volunteer: "Volunteer memberi makna dan koneksi komunitas. Pilih organisasi yang sejalan dengan nilai Anda, mulai dengan komitmen kecil, dan lihat dampak positif yang terwujud.",
   hobby: "Hobi penting untuk keseimbangan hidup dan kreativitas. Invest waktu pada aktivitas yang membuat Anda flow, tanpa tekanan untuk sempurna atau menghasilkan.",
   keamanan: "Keamanan digital mulai dari password kuat yang unik tiap akun, aktifkan two-factor authentication, hati-hati phishing, dan update software secara rutin.",
-  marah: "Saya mengerti Anda merasa marah. Emosi ini adalah respons alami. Cobalah tarik napas dalam-dalam, hitung sampai 10, dan beri diri Anda waktu sejenak sebelum bereaksi.",
+
+  // Teknologi & Digital Tambahan
+  ai: "AI adalah alat bantu yang powerful. Gunakan untuk brainstorming, drafting, atau riset, tapi tetap verifikasi fakta dan pertahankan human judgment untuk keputusan penting.",
+  coding: "Belajar programming membutuhkan konsistensi. Mulai dari satu bahasa (Python/JavaScript), buat proyek kecil, dan gunakan dokumentasi resmi serta Stack Overflow.",
+  website: "Membuat website bisa dimulai dengan platform no-code seperti WordPress/Wix, atau belajar HTML/CSS/JavaScript untuk kustomisasi penuh.",
+  data: "Data literacy penting di era digital. Pelajari Excel dasar, lalu SQL untuk database, atau Python (pandas) untuk analisis lebih dalam.",
+
+  // Keseharian & Praktis
+  resep: "Masak sendiri lebih sehat dan hemat. Cari resep dengan rating tinggi, ikuti step-by-step, dan jangan takut modifikasi sesuai selera.",
+  cuci: "Mencuci pakaian dengan benar: pisahkan warna, perhatikan label care, gunakan deterjen sesuai takaran, dan jemur di tempat teduh agar awet.",
+  bersih: "Kebersihan ruangan mempengaruhi produktivitas. Buat jadwal cleaning rutin, declutter regularly, dan gunakan storage yang terorganisir.",
+  dekor: "Dekorasi ruangan tidak harus mahal. Manfaatkan secondhand, DIY, dan pilih tema warna konsisten untuk kesan cohesive.",
+
+  // Kesehatan Mental & Self-Care
+  meditasi: "Meditasi 10 menit sehari bisa mengubah struktur otak. Gunakan aplikasi guided seperti Headspace, atau mulai dengan fokus pada napas.",
+  jurnal: "Journaling membantu processing emosi. Tulis 3 hal yang disyukuri setiap pagi, atau curahkan pikiran tanpa sensor sebelum tidur.",
+  boundaries: "Boundary yang sehat itu perlu. Belajar mengatakan 'tidak' tanpa rasa bersalah, dan komunikasikan ekspektasi dengan jelas.",
+  burnout: "Burnout bukan kelemahan. Tanda: cynicism, exhaustion, inefficacy. Solusi: rest, reconnect dengan purpose, dan evaluasi workload.",
+
+  // Finansial Lanjut
+  freelance: "Freelance menawarkan fleksibilitas tapi butuh disiplin. Atur jam kerja tetap, pisahkan rekening pribadi-bisnis, dan bayar pajak tepat waktu.",
+  sidehustle: "Side hustle idealnya berawal dari hobi atau skill yang sudah dikuasai. Validasi demand dulu, baru invest waktu/duit.",
+  pasif: "Income pasif membutuhkan upfront effort besar dulu: buat digital product, affiliate marketing, atau investasi dividen.",
+  pajak: "Pahami kewajiban pajak Anda. Simpan bukti pengeluaran yang bisa diklaim, dan pertimbangkan konsultasi akuntan untuk optimalisasi legal.",
+
+  // Relasi Sosial
+  conflict: "Konflik adalah normal dalam relasi. Fokus pada issue bukan personal attack, cari win-win solution, dan tahu kapan untuk agree to disagree.",
+  toxic: "Relasi toxic membuat Anda merasa drained. Tanda: constant criticism, lack of support, gaslighting. Prioritaskan mental health Anda.",
+  single: "Masa single adalah kesempatan untuk self-discovery. Bangun foundation yang kuat: karir, hobby, support system, sebelum mencari partner.",
+  moveon: "Moving on bukan tentang melupakan, melainkan menerima. Allow yourself to grieve, cut contact kalau perlu, dan fokus rebuild life Anda.",
+
+  // Karir Development
+  promosi: "Dapatkan promosi dengan consistently deliver di atas ekspektasi, bangun visibility di organisasi, dan develop leadership skills.",
+  pindah: "Pindah kerja bisa refresh karir. Pertimbangkan: growth opportunity, culture fit, dan compensation package secara total.",
+  remote: "Kerja remoto butuh self-discipline. Setup dedicated workspace, komunikasikan dengan tim secara rutin, dan jaga batasan work-life.",
 };
 
 function findResponse(context, responses) {
@@ -129,21 +162,21 @@ function findResponse(context, responses) {
 
 function generateMockCaption({ context }) {
   const cleanedContext = typeof context === "string" ? context.trim() : "";
-  
+
   if (!cleanedContext) {
     return "Silakan ajukan pertanyaan atau ceritakan apa yang Anda butuhkan. Saya siap membantu dengan informasi yang saya miliki.";
   }
 
   // Cari response berdasarkan keyword
   const matchedResponse = findResponse(cleanedContext, ID_RESPONSES);
-  
+
   if (matchedResponse) {
     return matchedResponse;
   }
 
   // Template response yang mengakui topik user untuk pertanyaan tidak terduga
   const topicWords = cleanedContext.split(/\s+/).slice(0, 3).join(" ");
-  
+
   // Respons generik tapi kontekstual yang mengakui input user
   const genericResponses = [
     `Terima kasih telah berbagi tentang "${topicWords}". Meski saat ini layanan AI penuh, saya mengerti hal ini penting bagi Anda. Coba telusuri sumber terpercaya atau diskusikan dengan ahli di bidang tersebut.`,
@@ -151,7 +184,7 @@ function generateMockCaption({ context }) {
     `Anda menanyakan hal yang penting tentang "${topicWords}". Setiap pertanyaan layak mendapat jawaban yang baik. Mohon maaf saat ini sistem dalam mode terbatas. Coba ulangi pertanyaan nanti atau eksplorasi berbagai perspektif tentang topik ini.`,
     `Pertanyaan Anda tentang "${topicWords}" menunjukkan rasa ingin tahu yang bagus. Pengetahuan memang terus berkembang. Saat ini layanan sedang tidak tersedia penuh, tapi jangan berhenti mencari tahu dari sumber lain yang kredibel.`,
   ];
-  
+
   // Pilih respons generik secara random
   const randomIndex = Math.floor(Math.random() * genericResponses.length);
   return genericResponses[randomIndex];
