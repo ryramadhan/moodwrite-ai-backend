@@ -18,24 +18,7 @@ app.use(
   })
 );
 
-// CORS whitelist
-const ALLOWED_ORIGINS = [
-  "https://clever-ai-chat.vercel.app",
-  "https://clever-ai.vercel.app",
-  "http://localhost:5173",
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-        return callback(null, true);
-      }
-      callback(new Error(`Origin not allowed: ${origin}`));
-    },
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (_req, res) => {
