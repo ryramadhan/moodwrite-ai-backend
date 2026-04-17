@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 const { query } = require("./db");
 
 const SALT_ROUNDS = 12;
@@ -237,7 +237,7 @@ async function generateResetToken(email) {
   }
 
   // Generate token and expiry
-  const resetToken = uuidv4();
+  const resetToken = crypto.randomUUID();
   const expiry = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
 
   // Save to database
