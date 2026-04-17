@@ -31,14 +31,15 @@ async function generate(req, res) {
   const latency = Date.now() - startedAt;
 
   // Data ownership assignment:
-  // - Guest mode: user_id = NULL (global/public data)
-  // - Logged in: user_id = current user ID (private data)
-  const userId = req.userId || null;
-  await insertCaption({
-    userId,
-    context: sanitizedContext,
-    result,
-  });
+  // - Guest mode: NOT saved to DB (privacy-first)
+  // - Logged in: saved to DB with user ID
+  if (req.userId) {
+    await insertCaption({
+      userId: req.userId,
+      context: sanitizedContext,
+      result,
+    });
+  }
 
   res.json({
     result,
