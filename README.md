@@ -1,6 +1,6 @@
 # 🤖 MoodWrite AI Backend
 
-REST API untuk AI Assistant. Terima pertanyaan konteks dari user, generate respons dengan AI (Google Gemini) + fallback mock berbasis keyword, simpan history ke PostgreSQL.
+REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan konteks dari user, generate respons dengan AI (Google Gemini) + fallback mock berbasis keyword, simpan history ke PostgreSQL dengan data separation antar user.
 
 ## 🧰 Tech Stack
 
@@ -10,23 +10,105 @@ REST API untuk AI Assistant. Terima pertanyaan konteks dari user, generate respo
 | Framework | Express.js |
 | Database | PostgreSQL (Neon) |
 | AI | Google Gemini API |
+| Auth | JWT + bcrypt + Google OAuth |
+| Security | Rate limiting, input sanitization, CORS |
 | Deploy | Vercel |
 
 ## 🌐 API Endpoints
 
+### Public Endpoints
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
-| POST | `/api/generate` | Generate AI response (rate limited: 20/min) |
-| GET | `/api/captions?limit=20&offset=0` | List question history |
+| POST | `/api/auth/register` | Register new user (rate limited: 10/15min) |
+| POST | `/api/auth/login` | Login user (rate limited: 10/15min) |
+| POST | `/api/auth/google` | Google OAuth login (auto-register/login, rate limited) |
+| POST | `/api/auth/forgot-password` | Request password reset |
+| POST | `/api/auth/reset-password` | Reset password with token |
 
-### POST /api/generate
+### Protected Endpoints (Auth Optional)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/me` | Get current user (requires Bearer token) |
+| POST | `/api/generate` | Generate AI response (rate limited: 20/min). Guest: saved as global. Auth: saved to user |
+| GET | `/api/captions?limit=20&offset=0` | List history. Guest: only global data (user_id IS NULL). Auth: only own data |
+
+### POST /api/auth/register
 
 **Request:**
 ```json
 {
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "min6chars"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+### POST /api/auth/login
+
+**Request:**
+```json
+{
+  "email": "john@example.com",
+  "password": "min6chars"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+### POST /api/auth/google
+
+**Request:**
+```json
+{
+  "idToken": "google_id_token_from_frontend"
+}
+```
+
+**Response:** Same as login/register
+
+### POST /api/generate
+
+**Request (without auth - public):**
+```json
+{
   "context": "Bagaimana cara mengatasi stres kerja?"
 }
+```
+
+**Request (with auth - saves to user history):**
+```http
+Authorization: Bearer <jwt_token>
 ```
 
 **Response:**
@@ -41,6 +123,27 @@ REST API untuk AI Assistant. Terima pertanyaan konteks dari user, generate respo
 
 **Note:** Jika Gemini quota habis, otomatis fallback ke mock response berbasis 80+ keyword.
 
+### GET /api/captions (with metadata)
+
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "context": "Bagaimana cara mengatasi stres?",
+      "result": "Stres bisa diatasi dengan...",
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "meta": {
+    "isAuthenticated": false,
+    "isGuest": true,
+    "count": 1
+  }
+}
+```
+
 ## 🚀 Setup Local
 
 ```bash
@@ -53,18 +156,55 @@ npm install
 cp .env.example .env
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | Neon PostgreSQL connection string |
-| `GEMINI_API_KEY` | Google Gemini API key |
-| `GEMINI_MODEL` | Model (default: `gemini-1.5-flash-latest`) |
-| `AI_FALLBACK_MOCK` | Fallback ke mock jika quota habis (default: `true`) |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Neon PostgreSQL connection string |
+| `GEMINI_API_KEY` | Yes | Google Gemini API key |
+| `JWT_SECRET` | Yes | JWT secret key (min 32 chars) |
+| `JWT_EXPIRES_IN` | No | JWT expiry (default: `7d`) |
+| `GEMINI_MODEL` | No | Model (default: `gemini-1.5-flash-latest`) |
+| `AI_FALLBACK_MOCK` | No | Fallback ke mock jika quota habis (default: `true`) |
+| `GOOGLE_CLIENT_ID` | Yes* | Google OAuth Client ID (*required for Google login) |
+| `GOOGLE_CLIENT_SECRET` | Yes* | Google OAuth Client Secret (*required for Google login) |
+| `FRONTEND_URL` | No | Frontend URL for CORS (default: `http://localhost:5173`) |
+| `SMTP_HOST` | No | SMTP server for forgot password emails |
+| `SMTP_PORT` | No | SMTP port (default: `587`) |
+| `SMTP_USER` | No | SMTP username/email |
+| `SMTP_PASS` | No | SMTP password/app password |
 
 ### 🗄️ Database Schema
 
 ```bash
 psql "$DATABASE_URL" -f sql/schema.sql
 ```
+
+### 🔐 Data Separation & Access Rules
+
+**Production-Grade Data Privacy:**
+
+| Mode | Behavior | Data Access |
+|------|----------|-------------|
+| **Guest** (no token) | Can chat, history saved with `user_id = NULL` | Only sees global/public data (`user_id IS NULL`) |
+| **Authenticated** (with JWT) | Chat saved with `user_id = current_user` | Only sees own data (`user_id = ?`) |
+
+**Security Guarantees:**
+- ✅ Strict user data isolation
+- ✅ No cross-user data leakage
+- ✅ Guest data never mixed with user data
+- ✅ All queries filtered by `user_id`
+
+### 📊 Database Migrations
+
+**Add authentication support to existing database:**
+
+```bash
+psql "$DATABASE_URL" -f sql/migration_simple.sql
+```
+
+This creates:
+- `users` table (id, name, email, password, google_id, etc)
+- Adds `user_id` column to `captions` table
+- Creates indexes for performance
 
 ### ▶️ Run Dev
 
@@ -97,10 +237,38 @@ File `vercel.json` sudah tersedia:
 
 Add di Vercel Dashboard → Settings → Environment Variables:
 
+**Required:**
 ```
 DATABASE_URL=postgresql://...
 GEMINI_API_KEY=...
+JWT_SECRET=your_random_secret_min_32_chars
+```
+
+**For Google Login:**
+```
+GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-xxx
+FRONTEND_URL=https://your-frontend.vercel.app
+```
+
+**For Email (Forgot Password):**
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+```
+
+**Optional (for Google Login):**
+```
+GOOGLE_CLIENT_ID=your_google_client_id
+FRONTEND_URL=https://your-frontend-url.vercel.app
+```
+
+**Optional (AI settings):**
+```
 AI_FALLBACK_MOCK=true
+GEMINI_MODEL=gemini-1.5-flash-latest
 ```
 
 ### 4. Database (Neon)
@@ -114,20 +282,48 @@ AI_FALLBACK_MOCK=true
 
 ## 🏗️ Architecture
 
+### System Overview
+
 ```
 ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
 │   Vercel    │──────▶   Vercel    │──────▶    Neon     │
 │  Frontend   │      │   Backend   │      │  PostgreSQL │
+│  (React)    │      │  (Express)  │      │  (User data)│
 └─────────────┘      └─────────────┘      └─────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+   ┌─────────┐        ┌─────────┐        ┌─────────┐
+   │  JWT    │        │ Google  │        │ Gemini  │
+   │  Auth   │        │  OAuth  │        │   AI    │
+   └─────────┘        └─────────┘        └─────────┘
+```
+
+### Authentication Flow
+
+```
+Guest Mode                    Authenticated Mode
+───────────                   ──────────────────
+No Token                      Bearer Token (JWT)
+   │                                │
+   ▼                                ▼
+user_id = NULL              user_id = current_user
+   │                                │
+   ▼                                ▼
+Global Data                   Private Data Only
+(user_id IS NULL)             (user_id = ?)
 ```
 
 ## ✨ Features
 
-- **Rate limiting:** 20 requests/minute per endpoint
+- **Rate limiting:** 20 requests/minute per endpoint, 10 auth attempts per 15 minutes
 - **AI fallback:** Auto-switch ke mock response (80+ keyword) jika Gemini quota habis
 - **Multi-model retry:** Fallback antar model Gemini jika error
 - **Input validation:** Sanitasi context input + rate limiting
-- **Security:** Helmet, CORS, SSL-ready PostgreSQL
+- **Security:** Helmet, CORS, SSL-ready PostgreSQL, bcrypt password hashing
+- **Authentication:** JWT-based auth (7d expiry), Google OAuth, password reset
+- **Data Separation:** Strict isolation - guests see global data, users see only their data
+- **Security:** bcrypt hashing, rate limiting, input sanitization, CORS whitelist
 
 ## 📁 Project Structure
 
@@ -135,7 +331,8 @@ AI_FALLBACK_MOCK=true
 src/
 ├── controllers/     # Request handlers
 ├── routes/          # Route definitions + middleware
-├── services/        # Business logic (AI, DB, captions)
+├── services/        # Business logic (AI, DB, captions, auth)
+├── middleware/      # Auth middleware
 ├── utils/           # Helpers (asyncHandler)
 sql/
 └── schema.sql       # Database schema

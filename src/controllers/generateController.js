@@ -30,7 +30,12 @@ async function generate(req, res) {
   });
   const latency = Date.now() - startedAt;
 
+  // Data ownership assignment:
+  // - Guest mode: user_id = NULL (global/public data)
+  // - Logged in: user_id = current user ID (private data)
+  const userId = req.userId || null;
   await insertCaption({
+    userId,
     context: sanitizedContext,
     result,
   });

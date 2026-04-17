@@ -3,7 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
 
-const requiredEnv = ["GEMINI_API_KEY"];
+const requiredEnv = ["GEMINI_API_KEY", "JWT_SECRET"];
 const missing = requiredEnv.filter((key) => !process.env[key]);
 if (missing.length > 0) {
   console.error(`[FATAL] Missing required environment variables: ${missing.join(", ")}`);
@@ -18,7 +18,34 @@ app.use(
   })
 );
 
-app.use(cors());
+// CORS configuration - allow localhost for dev and specific domains for prod
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4000",
+  "https://clever-ai-chat.vercel.app",
+  "https://moodwrite-ai.vercel.app",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      // Log blocked origins for debugging
+      console.log(`[CORS] Blocked origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (_req, res) => {
@@ -28,6 +55,14 @@ app.get("/", (_req, res) => {
     status: "running",
     endpoints: {
       health: "/health",
+      auth: {
+        register: "POST /api/auth/register",
+        login: "POST /api/auth/login",
+        google: "POST /api/auth/google",
+        forgotPassword: "POST /api/auth/forgot-password",
+        resetPassword: "POST /api/auth/reset-password",
+        me: "GET /api/auth/me",
+      },
       generate: "POST /api/generate",
       history: "GET /api/captions",
     },
@@ -40,6 +75,9 @@ app.get("/health", (_req, res) => {
 });
 
 const apiRoutes = require("./src/routes/generateRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+
+app.use("/api/auth", authRoutes);
 app.use("/api", apiRoutes);
 
 // Centralized error handler

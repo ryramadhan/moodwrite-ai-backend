@@ -1,6 +1,7 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { asyncHandler } = require("../utils/asyncHandler");
+const { optionalAuth } = require("../middleware/auth");
 const { generate } = require("../controllers/generateController");
 const { getCaptions } = require("../controllers/captionsController");
 
@@ -18,8 +19,9 @@ const generateLimiter = rateLimit({
   },
 });
 
-router.post("/generate", generateLimiter, asyncHandler(generate));
-router.get("/captions", asyncHandler(getCaptions));
+// Optional auth: if token provided, captions linked to user; if not, public
+router.post("/generate", generateLimiter, optionalAuth, asyncHandler(generate));
+router.get("/captions", optionalAuth, asyncHandler(getCaptions));
 
 module.exports = router;
 
