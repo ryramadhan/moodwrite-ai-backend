@@ -2,12 +2,15 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { asyncHandler } = require("../utils/asyncHandler");
 const { optionalAuth, authenticateToken } = require("../middleware/auth");
-const { generate } = require("../controllers/generateController");
-const { 
-  getCaptions, 
-  renameCaptionController, 
-  pinCaptionController, 
-  deleteCaptionController 
+const {
+  generate,
+  generateStream,
+} = require("../controllers/generateController");
+const {
+  getCaptions,
+  renameCaptionController,
+  pinCaptionController,
+  deleteCaptionController
 } = require("../controllers/captionsController");
 
 const router = express.Router();
@@ -26,6 +29,7 @@ const generateLimiter = rateLimit({
 
 // Optional auth: if token provided, captions linked to user; if not, public
 router.post("/generate", generateLimiter, optionalAuth, asyncHandler(generate));
+router.post("/generate/stream", generateLimiter, optionalAuth, asyncHandler(generateStream));
 router.get("/captions", optionalAuth, asyncHandler(getCaptions));
 
 // History item actions (requires authentication)

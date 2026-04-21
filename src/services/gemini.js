@@ -65,7 +65,52 @@ async function generateCaptionWithGemini({ context }) {
   }
 }
 
+async function* generateCaptionWithGeminiStream({ context }) {
+  const genAI = getGeminiClient();
+  const configuredModel = process.env.GEMINI_MODEL;
+  const candidateModels = [
+    configuredModel,
+    "gemini-1.5-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-1.5-pro-latest",
+  ].filter(Boolean);
+
+  let lastErr = null;
+
+  for (const modelName of candidateModels) {
+    console.log(`[Gemini Stream] Trying model: ${modelName}`);
+    try {
+      const stream = await genAI.models.generateContentStream({
+        model: modelName,
+        systemInstruction: SYSTEM_PROMPT,
+        contents: buildUserPrompt({ context }),
+        config: {
+          temperature: 0.7,
+          maxOutputTokens: 500,
+        },
+      });
+
+      for await (const chunk of stream) {
+        const text = chunk?.text || "";
+        if (text) {
+          yield { chunk: text, provider: "gemini", model: modelName };
+        }
+      }
+      return;
+    } catch (inner) {
+      lastErr = inner;
+      const msg = String(inner?.message || inner || "");
+      console.log(`[Gemini Stream Error] Model ${modelName}: ${msg}`);
+      if (/404|not found|not supported/i.test(msg)) continue;
+      throw inner;
+    }
+  }
+
+  throw lastErr || new Error("Gemini streaming error");
+}
+
 module.exports = {
   generateCaptionWithGemini,
+  generateCaptionWithGeminiStream,
 };
 

@@ -32,7 +32,8 @@ REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/auth/me` | Get current user (requires Bearer token) |
-| POST | `/api/generate` | Generate AI response (rate limited: 20/min). Guest: saved as global. Auth: saved to user |
+| POST | `/api/generate/stream` | **SSE Streaming** - Generate AI response with real-time streaming (rate limited: 20/min). Uses Server-Sent Events for chunk-by-chunk delivery |
+| POST | `/api/generate` | Legacy non-streaming endpoint (rate limited: 20/min). Returns full response at once |
 | GET | `/api/captions?limit=20&offset=0` | List history. Guest: only global data (user_id IS NULL). Auth: only own data |
 
 ### POST /api/auth/register
@@ -97,7 +98,9 @@ REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan
 
 **Response:** Same as login/register
 
-### POST /api/generate
+### POST /api/generate/stream (SSE Streaming)
+
+**Server-Sent Events (SSE) endpoint untuk real-time AI response streaming.**
 
 **Request (without auth - public):**
 ```json
@@ -109,7 +112,33 @@ REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan
 **Request (with auth - saves to user history):**
 ```http
 Authorization: Bearer <jwt_token>
+Content-Type: application/json
 ```
+
+**Response Format (SSE - Stream):**
+```
+data: {"chunk": "Stres kerja", "provider": "gemini", "model": "gemini-1.5-flash-latest"}
+
+data: {"chunk": " bisa diatasi dengan", "provider": "gemini", "model": "gemini-1.5-flash-latest"}
+
+data: {"chunk": " teknik relaksasi...", "provider": "gemini", "model": "gemini-1.5-flash-latest"}
+
+data: {"done": true, "result": "Stres kerja bisa diatasi dengan teknik relaksasi...", "provider": "gemini", "context": "Bagaimana cara mengatasi stres kerja?", "latency": 1200}
+```
+
+**Error Handling (SSE):**
+```
+data: {"error": true, "message": "Gemini API error", "statusCode": 500}
+```
+
+**Note:** 
+- Menggunakan Google Gemini `generateContentStream()` untuk real-time streaming
+- Jika Gemini quota habis (429 error), otomatis fallback ke **mock streaming** (word-by-word)
+- Fallback mock juga di-stream untuk UX yang konsisten
+
+### POST /api/generate (Legacy Non-Streaming)
+
+**Legacy endpoint yang mengembalikan response lengkap sekaligus.**
 
 **Response:**
 ```json
@@ -122,6 +151,43 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Note:** Jika Gemini quota habis, otomatis fallback ke mock response berbasis 80+ keyword.
+
+---
+
+## 🌊 Server-Sent Events (SSE) Architecture
+
+### Backend Streaming Architecture
+
+```javascript
+// services/gemini.js - Async Generator untuk streaming
+genAI.models.generateContentStream({
+  model: modelName,
+  contents: prompt,
+})
+
+// controllers/generateController.js - SSE response
+res.setHeader('Content-Type', 'text/event-stream');
+for await (const chunk of stream) {
+  res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+}
+```
+
+### Fallback Mock Streaming
+
+Ketika Gemini API error (429 quota exceeded, dll), backend tidak mengembalikan response lengkap. Sebaliknya, mock response di-**stream** juga:
+
+```javascript
+// services/ai.js - Mock streaming
+const words = result.split(/(\s+)/);
+for (const word of words) {
+  yield { chunk: word, provider: "mock", model: "mock" };
+  await new Promise((r) => setTimeout(r, 10)); // Simulate streaming delay
+}
+```
+
+Ini memastikan UX frontend tetap konsisten - user selalu melihat text muncul chunk-by-chunk.
+
+---
 
 ### GET /api/captions (with metadata)
 
@@ -316,14 +382,15 @@ Global Data                   Private Data Only
 
 ## ✨ Features
 
+- **Real-time AI Streaming:** Server-Sent Events (SSE) endpoint for chunk-by-chunk response delivery
 - **Rate limiting:** 20 requests/minute per endpoint, 10 auth attempts per 15 minutes
-- **AI fallback:** Auto-switch ke mock response (80+ keyword) jika Gemini quota habis
-- **Multi-model retry:** Fallback antar model Gemini jika error
+- **AI fallback:** Auto-switch ke mock streaming (80+ keyword) jika Gemini quota habis
+- **Multi-model retry:** Fallback antar model Gemini jika error (flash-latest, pro, etc)
 - **Input validation:** Sanitasi context input + rate limiting
 - **Security:** Helmet, CORS, SSL-ready PostgreSQL, bcrypt password hashing
 - **Authentication:** JWT-based auth (7d expiry), Google OAuth, password reset
 - **Data Separation:** Strict isolation - guests see global data, users see only their data
-- **Security:** bcrypt hashing, rate limiting, input sanitization, CORS whitelist
+- **Streaming Fallback:** Mock data juga di-stream (word-by-word) untuk UX konsisten
 
 ## 📁 Project Structure
 
