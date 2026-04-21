@@ -47,4 +47,3 @@ module.exports = {
   pool,
   query,
 };
-
